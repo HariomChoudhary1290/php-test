@@ -200,3 +200,238 @@ This project shows real-world DevOps workflow:
 * Database integration
 
 ---
+
+Part 2
+# 🚀 CI/CD Pipeline using Jenkins, GitHub Webhook & Docker
+
+## 📌 Project Overview
+
+This project demonstrates a complete CI/CD pipeline where:
+
+* Code is pushed to GitHub
+* GitHub webhook triggers Jenkins automatically
+* Jenkins pulls latest code
+* Docker image is built
+
+---
+
+## 🛠️ Jenkins Installation (EC2 - Ubuntu)
+
+### 🔹 Clean old Jenkins config
+
+```bash
+sudo rm -f /etc/apt/sources.list.d/jenkins.list
+sudo rm -f /usr/share/keyrings/jenkins-keyring.asc
+sudo rm -f /usr/share/keyrings/jenkins-keyring.gpg
+```
+
+---
+
+### 🔹 Install Java
+
+```bash
+sudo apt update
+sudo apt install -y fontconfig openjdk-17-jre
+java -version
+```
+
+---
+
+### 🔹 Add Jenkins GPG Key (2026 Fix)
+
+```bash
+sudo mkdir -p /etc/apt/keyrings
+sudo wget -O /etc/apt/keyrings/jenkins-keyring.asc \
+https://pkg.jenkins.io/debian-stable/jenkins.io-2026.key
+```
+
+---
+
+### 🔹 Add Jenkins Repository
+
+```bash
+echo "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc] \
+https://pkg.jenkins.io/debian-stable binary/" | \
+sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
+```
+
+---
+
+### 🔹 Install Jenkins
+
+```bash
+sudo apt update
+sudo apt install jenkins -y
+```
+
+---
+
+### 🔹 Start Jenkins
+
+```bash
+sudo systemctl start jenkins
+sudo systemctl enable jenkins
+sudo systemctl status Jenkins
+```
+
+---
+
+### 🔹 Get Admin Password
+
+```bash
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+```
+
+👉 Open in browser:
+
+```
+http://<EC2-PUBLIC-IP>:8080
+```
+
+---
+
+## ⚙️ Jenkins Setup
+
+* Unlock Jenkins using admin password
+* Install suggested plugins
+* Create admin user
+
+---
+
+## 🔧 Create Jenkins Pipeline Job
+
+1. Jenkins Dashboard → **New Item**
+2. Select **Pipeline**
+3. Enter job name
+
+---
+
+### 🧾 Pipeline Script
+
+```groovy
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Clone Code') {
+            steps {
+                git branch: 'main', url: 'https://github.com/YOUR_USERNAME/php-test.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t php-app .'
+            }
+        }
+
+    }
+}
+```
+
+---
+
+## 🔔 Enable Auto Trigger (Webhook)
+
+### Jenkins:
+
+* Go to **Configure**
+* Enable:
+
+```
+GitHub hook trigger for GITScm polling
+```
+
+---
+
+### GitHub:
+
+Go to:
+**Repository → Settings → Webhooks → Add webhook**
+
+Fill details:
+
+* Payload URL:
+
+```
+http://<EC2-IP>:8080/github-webhook/
+```
+
+* Content Type:
+
+```
+application/json
+```
+
+* Event:
+
+```
+Just the push event
+```
+
+---
+
+## 🔁 Git Commands (Trigger Pipeline)
+
+```bash
+git add .
+git commit -m "trigger test"
+git push origin main
+```
+
+---
+
+## 🔄 CI/CD Flow
+
+1. Developer pushes code to GitHub
+2. GitHub sends webhook request
+3. Jenkins receives trigger
+4. Jenkins pulls latest code
+5. Docker image build starts
+
+---
+
+## ✅ Output Verification
+
+* Jenkins job automatically triggers
+* Build stages execute successfully
+* Application updates reflect
+
+---
+
+## 💡 Key Interview Points
+
+* Webhook-based automation (no manual build)
+* Importance of branch consistency (main/master)
+* Jenkins pipeline stages
+* Docker integration with CI/CD
+* Real-time auto trigger workflow
+
+---
+
+## 🚨 Common Issues & Fixes
+
+| Issue                  | Solution                   |
+| ---------------------- | -------------------------- |
+| nothing to commit      | File not saved             |
+| Jenkins not triggering | Check webhook & trigger    |
+| Branch mismatch        | Use same branch everywhere |
+| Webhook failed         | Ensure EC2 is public       |
+
+---
+
+## 🎯 Conclusion
+
+Successfully implemented automated CI/CD pipeline using:
+
+* Jenkins
+* GitHub Webhooks
+* Docker
+
+---
+
+## 🚀 Final Statement (Interview)
+
+**"Whenever I push code to GitHub, Jenkins automatically triggers via webhook, pulls the latest code, and builds the Docker image without any manual intervention."**
+
