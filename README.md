@@ -431,7 +431,7 @@ Successfully implemented automated CI/CD pipeline using:
 
 ---
 
-## 🚀 Final Statement (Interview)
+## 🚀 Final Statement
 
 **"Whenever I push code to GitHub, Jenkins automatically triggers via webhook, pulls the latest code, and builds the Docker image without any manual intervention."**
 
